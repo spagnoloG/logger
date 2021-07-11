@@ -6,8 +6,9 @@ const jwt = require('jsonwebtoken');
 const check_auth = require('../helpers/check-auth');
 const check_perms = require('../helpers/check-permissions');
 const check_admin = require('../helpers/check-admin');
+
 /*
-+ Register a new user
+* Register a new user
 */
 
 router.post('/register', async (req, res) => {
@@ -55,7 +56,7 @@ router.post('/register', async (req, res) => {
 });
 
 /*
-+ Login, return JWT
+* Login, return JWT
 */
 
 router.post('/login', async (req, res) => {
@@ -158,4 +159,58 @@ router.delete('/:id', check_auth, check_admin, async(req, res) => {
     }
 })
 
+/*
+* Update user data, only if it matches requested ID, or if user is admin
+*/
+
+router.patch('/update/:id', check_auth, check_perms, async (req, res) => {
+    const {email, name, key_id} = req.body;
+    let update_user_query;
+    let update_user_result;
+
+    try {
+        update_user_query = 'UPDATE user SET Name = (?), Email = (?), Key_id = (?) WHERE User_id = (?)';
+        update_user_result = await pool.query(update_user_query, [name, email, key_id, req.params.id]);
+        return res.status(200).json({
+            code: 'UPDATE_SUCCCESS',
+            message: update_user_result
+        })
+    } catch {
+        return res.status(500).json({
+            error: err
+        })
+    }
+})
+
+/*
+* Change password only if it matches requested ID, or if user is admin
+*/
+
+router.patch('/update_password/:id', check_auth, check_perms, async (req, res) => {
+    const {password} = req.body;
+    let update_user_password_query;
+    let update_user_password_result;
+
+    // Hash new password and update record in database
+    bcrypt.hash(password, 10, async (err, hash) => {
+        if(err) {
+            return res.status(500).json({
+                error: "Error while hashing password!"
+            })
+        }
+
+        try {
+            update_user_password_query = 'UPDATE user SET Password = (?) WHERE User_id = (?)';
+            update_user_password_result= await pool.query(update_user_password_query, [hash, req.params.id]);
+            return res.status(200).json({
+                code: 'UPDATE_SUCCCESS',
+                message: update_user_password_result
+            })
+        } catch {
+            return res.status(500).json({
+                error: err
+            })
+        }
+    });
+})
 module.exports = router;
