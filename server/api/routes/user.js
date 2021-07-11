@@ -3,16 +3,12 @@ const pool = require('../helpers/database');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-router.get('/:id', async (req, res) => {
-    try {
-        const sql_query = 'SELECT id, email, created_at FROM user WHERE id=?';
-        const rows = await pool.query(sql_query, req.params.id);
-        res.status(200).json(rows);
-    } catch(error) {
-        res.status(400).send(error.message)
-    }
-});
+const check_auth = require('../helpers/check-auth');
+const check_perms = require('../helpers/check-permissions');
+const check_admin = require('../helpers/check-admin');
+/*
++ Register a new user
+*/
 
 router.post('/register', async (req, res) => {
     const {email, password, name, role, key_id} = req.body;
@@ -26,13 +22,14 @@ router.post('/register', async (req, res) => {
         email_result = await pool.query(check_email_query, email);
     } catch (err) {
         return res.status(500).json({
-            error: "Error executing SQL query"
+            error: err
         })
     }
 
     if(email_result.length >= 1) {
         return res.status(409).json({
-            message: 'Mail alreay in db!'
+            message: 'Mail alreay in db!',
+            code: 'EMAIL_ALREADY_IN_DB'
         })
     }
     // if everything is OK, hash password and store new user into DB
@@ -46,7 +43,8 @@ router.post('/register', async (req, res) => {
             add_new_user_query = 'INSERT INTO user (Email, Password, Name, Role, Key_id) VALUES (?, ?, ?, ?, ?)';
             add_new_user_result = await pool.query(add_new_user_query, [email, hash, name, role, key_id]);
             return res.status(200).json({
-                message: `successfully added user with ID: ${add_new_user_result.insertId} !`
+                message: `successfully added user with ID: ${add_new_user_result.insertId} !`,
+                code: 'NEW_USER_SUCCESS'
             });
         } catch (err) {
             return res.status(500).json({
@@ -54,8 +52,110 @@ router.post('/register', async (req, res) => {
             })
         }
     })
-    //const sql_query = 'INSERT INTO user (email, password) VALUES (?,?)';
-    //const result = await pool.query(sql_query, [email, password]);
 });
+
+/*
++ Login, return JWT
+*/
+
+router.post('/login', async (req, res) => {
+    const {email, password} = req.body;
+    let find_user_query;
+    let find_user_result;
+    // Firstly check if user is stored in database
+    try {
+        find_user_query = 'SELECT Password, User_id FROM user WHERE Email = (?)';
+        find_user_result = await pool.query(find_user_query, email);
+        if (find_user_result < 1) {
+            return res.status(401).json({
+                message: 'Email does not exist in DB!',
+                code: 'EMAIL_AUTH_ERR'
+            })
+        }
+    } catch(err) {
+        return res.status(500).json({
+            error: err
+        })
+    }
+    // Check if password matches -> return JWT
+    bcrypt.compare(password, find_user_result[0].Password, (err, result) => {
+        if(err) {
+            return res.status(401).json({
+                message: 'Entered password does not match!',
+                code: 'PASSWORD_AUTH_ERR'
+            })
+        }
+        if(result) {
+            const token = jwt.sign({
+                email: email,
+                user_id: find_user_result[0].User_id
+            }, process.env.JWT_KEY,
+            {
+                expiresIn: "6h"
+            });
+            return res.status(200).json({
+                message: 'Auth successful',
+                code: 'AUTH_SUCCESS',
+                user_id: find_user_result[0].User_id,
+                token: token
+            });
+        }
+        return res.status(401).json({
+            message: 'Error checking password',
+            code: 'PASSWORD_AUTH_ERR'
+        })
+    })
+})
+
+/*
+* Get user data, only if it matches requested ID, or if user is admin
+*/
+
+router.get('/:id', check_auth, check_perms, async(req, res) => {
+    let find_user_query;
+    let find_user_result;
+   
+    try {
+        find_user_query = 'SELECT Email, Name, Role, Key_id, User_id from user where User_id = (?)';
+        find_user_result = await pool.query(find_user_query, req.params.id);
+        return res.status(200).json({
+            code: "USER_SUCCESS",
+            data: {
+                email: find_user_result[0].Email,
+                name: find_user_result[0].Name,
+                role: find_user_result[0].Role,
+                key_id: find_user_result[0].Key_id ? find_user_result[0].Key_id : null,
+                user_id: find_user_result[0].User_id
+            } 
+            
+        })
+    } catch {
+        return res.status(500).json({
+            error: err
+        })
+    }
+})
+
+/*
+* Delete user, only if user is admin
+*/
+
+router.delete('/:id', check_auth, check_admin, async(req, res) => {
+    let delete_user_query;
+    let delete_user_result;
+
+    try {
+        delete_user_query = 'DELETE FROM user WHERE User_id = (?)';
+        delete_user_result = await pool.query(delete_user_query, req.params.id);
+        return res.status(200).json({
+            code: 'DELETE_SUCCCESS',
+            message: delete_user_result
+        })
+    } catch {
+        return res.status(500).json({
+            error: err
+        })
+    }
+})
 
 module.exports = router;
