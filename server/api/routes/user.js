@@ -41,8 +41,13 @@ router.post('/register', async (req, res) => {
             })
         }
         try {
-            add_new_user_query = 'INSERT INTO user (Email, Password, Name, Role, Key_id) VALUES (?, ?, ?, ?, ?)';
-            add_new_user_result = await pool.query(add_new_user_query, [email, hash, name, role, key_id]);
+            if(key_id) {
+                add_new_user_query = 'INSERT INTO user (Email, Password, Name, Role, Key_id) VALUES (?, ?, ?, ?, ?)';
+                add_new_user_result = await pool.query(add_new_user_query, [email, hash, name, role, key_id]);
+            } else {
+                add_new_user_query = 'INSERT INTO user (Email, Password, Name, Role) VALUES (?, ?, ?, ?)';
+                add_new_user_result = await pool.query(add_new_user_query, [email, hash, name, role]);
+            }
             return res.status(200).json({
                 message: `successfully added user with ID: ${add_new_user_result.insertId} !`,
                 code: 'NEW_USER_SUCCESS'
@@ -117,18 +122,11 @@ router.get('/:id', check_auth, check_perms, async(req, res) => {
     let find_user_result;
    
     try {
-        find_user_query = 'SELECT Email, Name, Role, Key_id, User_id from user where User_id = (?)';
+        find_user_query = 'SELECT Email as email, Name as name, Role as role, Key_id as key_id, User_id as user_id from user where User_id = (?)';
         find_user_result = await pool.query(find_user_query, req.params.id);
         return res.status(200).json({
             code: "USER_SUCCESS",
-            data: {
-                email: find_user_result[0].Email,
-                name: find_user_result[0].Name,
-                role: find_user_result[0].Role,
-                key_id: find_user_result[0].Key_id ? find_user_result[0].Key_id : null,
-                user_id: find_user_result[0].User_id
-            } 
-            
+            data: find_user_result
         })
     } catch (err) {
         return res.status(500).json({

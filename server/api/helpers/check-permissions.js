@@ -9,7 +9,7 @@ module.exports = async (req, res, next) => {
     let find_request_user_result;
 
     try {
-        find_request_user_query = 'SELECT Role from user where User_id = (?)';
+        find_request_user_query = 'SELECT Role FROM user WHERE User_id = (?)';
         find_request_user_result = await pool.query(find_request_user_query, req.user_data.user_id);
     } catch(err) {
         return res.status(500).json({
