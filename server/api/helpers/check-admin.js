@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
     try {
         find_request_user_query = 'SELECT Role from user where User_id = (?)';
         find_request_user_result = await pool.query(find_request_user_query, req.user_data.user_id);
-    } catch(err) {
+    } catch (err) {
         return res.status(500).json({
             error: err
         })

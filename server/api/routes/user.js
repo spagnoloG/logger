@@ -73,7 +73,7 @@ router.post('/login', async (req, res) => {
                 code: 'EMAIL_AUTH_ERR'
             })
         }
-    } catch(err) {
+    } catch (err) {
         return res.status(500).json({
             error: err
         })
@@ -130,7 +130,7 @@ router.get('/:id', check_auth, check_perms, async(req, res) => {
             } 
             
         })
-    } catch {
+    } catch (err) {
         return res.status(500).json({
             error: err
         })
@@ -152,7 +152,7 @@ router.delete('/:id', check_auth, check_admin, async(req, res) => {
             code: 'DELETE_SUCCCESS',
             message: delete_user_result
         })
-    } catch {
+    } catch (err) {
         return res.status(500).json({
             error: err
         })
@@ -175,7 +175,7 @@ router.patch('/update/:id', check_auth, check_perms, async (req, res) => {
             code: 'UPDATE_SUCCCESS',
             message: update_user_result
         })
-    } catch {
+    } catch (err) {
         return res.status(500).json({
             error: err
         })
@@ -206,11 +206,36 @@ router.patch('/update_password/:id', check_auth, check_perms, async (req, res) =
                 code: 'UPDATE_SUCCCESS',
                 message: update_user_password_result
             })
-        } catch {
+        } catch (err) {
             return res.status(500).json({
                 error: err
             })
         }
     });
 })
+
+/*
+* Get all users list, only if admin
+*/
+
+router.get('/users/all', check_auth, check_admin, async (req, res) => {
+    let get_all_users_data_query;
+    let get_all_users_data_result;
+
+    console.log("wt")
+    try {
+        get_all_users_data_query = 'SELECT Name as name, User_id as user_id, Role as role, Key_id as key_id, Email as email FROM user';
+        get_all_users_data_result = await pool.query(get_all_users_data_query);
+        console.log(get_all_users_data_result)
+        return res.status(200).json({
+            code: 'GET_ALL_USERS_SUCCESS',
+            message: get_all_users_data_result
+        })
+    } catch (err) {
+        return res.status(500).json({
+            error: "err"
+        })
+    }
+})
+
 module.exports = router;
