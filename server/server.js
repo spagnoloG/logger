@@ -13,10 +13,12 @@ app.use(express.urlencoded({extended:false}));
 // Import routes
 const userRoute = require('./api/routes/user');
 const transactionRoute = require('./api/routes/transaction');
+const statusRoute = require('./api/routes/status');
 
 // Define routes
 app.use('/user', userRoute);
 app.use('/transaction', transactionRoute);
+app.use('/status', statusRoute);
 
 // Request permissions
 app.use((req, res, next) => {

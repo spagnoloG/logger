@@ -16,7 +16,7 @@ router.post('/new', async (req, res) => {
     let check_key_result;
     let new_transaction_query;
     let new_transaction_result;
-    
+
     try {
         check_key_query = 'SELECT User_id as user_id, Name as name, Email as email FROM user WHERE Key_id = (?)';
         check_key_result = await pool.query(check_key_query, key_id);
