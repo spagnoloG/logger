@@ -16,6 +16,7 @@ router.post('/new', async (req, res) => {
     let check_key_result;
     let new_transaction_query;
     let new_transaction_result;
+    
     try {
         check_key_query = 'SELECT User_id as user_id, Name as name, Email as email FROM user WHERE Key_id = (?)';
         check_key_result = await pool.query(check_key_query, key_id);
@@ -53,10 +54,10 @@ router.post('/new', async (req, res) => {
     try {
         check_last_time_scanned_query = 'SELECT Timestamp as timestamp FROM transaction WHERE User_id = (?) ORDER BY Timestamp DESC LIMIT 1';
         check_last_time_scanned_result = await pool.query(check_last_time_scanned_query, user_id);
-        const timestamp = check_last_time_scanned_result[0].timestamp;
+
         // Check if scan is more than  20 seconds old
         // Undefined if first transaction
-
+        const timestamp = check_last_time_scanned_result[0] ? check_last_time_scanned_result[0].timestamp : undefined;
         if(calculate_time_offset(timestamp) >= 20000 || timestamp == undefined) {
             try {
                 new_transaction_query = 'INSERT INTO transaction(User_id) VALUES(?)';
