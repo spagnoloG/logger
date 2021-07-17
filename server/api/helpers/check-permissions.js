@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
     } else {
         return res.status(401).json({
             message: 'Insufficient rights!',
-            code: 'RIGHTS_ERR'
+            code: 'ERR_INVALID_RIGHTS'
         })
     }
 }

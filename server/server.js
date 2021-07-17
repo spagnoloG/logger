@@ -14,11 +14,16 @@ app.use(express.urlencoded({extended:false}));
 const userRoute = require('./api/routes/user');
 const transactionRoute = require('./api/routes/transaction');
 const statusRoute = require('./api/routes/status');
+const workingHoursUserRoute = require('./api/routes/working-hours-user');
+const workingHoursAdminRoute = require('./api/routes/working-hours-admin');
+
 
 // Define routes
 app.use('/user', userRoute);
 app.use('/transaction', transactionRoute);
 app.use('/status', statusRoute);
+app.use('/working-hours-user', workingHoursUserRoute);
+app.use('/working-hours-admin', workingHoursAdminRoute);
 
 // Request permissions
 app.use((req, res, next) => {

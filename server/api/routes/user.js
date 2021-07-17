@@ -30,7 +30,7 @@ router.post('/register', async (req, res) => {
     if(email_result.length >= 1) {
         return res.status(409).json({
             message: 'Mail alreay in db!',
-            code: 'EMAIL_ALREADY_IN_DB'
+            code: 'ERR_EMAIL_ALREADY_IN_DB'
         })
     }
     // if everything is OK, hash password and store new user into DB
@@ -75,7 +75,7 @@ router.post('/login', async (req, res) => {
         if (find_user_result < 1) {
             return res.status(401).json({
                 message: 'Email does not exist in DB!',
-                code: 'EMAIL_AUTH_ERR'
+                code: 'ERR_EMAIL_NOT_FOUND'
             })
         }
     } catch (err) {
@@ -88,7 +88,7 @@ router.post('/login', async (req, res) => {
         if(err) {
             return res.status(401).json({
                 message: 'Entered password does not match!',
-                code: 'PASSWORD_AUTH_ERR'
+                code: 'ERR_INVALID_PASSWORD'
             })
         }
         if(result) {
@@ -107,8 +107,8 @@ router.post('/login', async (req, res) => {
             });
         }
         return res.status(401).json({
-            message: 'Error checking password',
-            code: 'PASSWORD_AUTH_ERR'
+            message: 'Encryption/Decryption failed',
+            code: 'ERR_UNKNOWN'
         })
     })
 })

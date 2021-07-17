@@ -5,10 +5,10 @@ const check_auth = require('../helpers/check-auth');
 const check_admin = require('../helpers/check-admin');
 
 /*
-* Return list of users that are currently working
+* Return list of users that are currently working / have worked
 */
 
-router.get('/currently-working', check_auth, check_admin, async (req, res) => {
+router.get('/working-today', check_auth, check_admin, async (req, res) => {
     let get_currently_working_users_query;
     let get_currently_working_users_result;
     let get_worked_today_users_query;
