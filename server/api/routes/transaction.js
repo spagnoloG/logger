@@ -1,14 +1,9 @@
 const express = require('express');
 const pool = require('../helpers/database');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const check_auth = require('../helpers/check-auth');
 const check_perms = require('../helpers/check-permissions');
-const check_admin = require('../helpers/check-admin');
 const calculate_time_offset = require('../helpers/calculate-time-offset');
-const { json } = require('express');
-
 
 /*
 * Post a new transaction

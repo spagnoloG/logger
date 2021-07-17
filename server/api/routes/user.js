@@ -184,7 +184,7 @@ router.patch('/update/:id', check_auth, check_perms, async (req, res) => {
 * Change password only if it matches requested ID, or if user is admin
 */
 
-router.patch('/update_password/:id', check_auth, check_perms, async (req, res) => {
+router.patch('/update-password/:id', check_auth, check_perms, async (req, res) => {
     const {password} = req.body;
     let update_user_password_query;
     let update_user_password_result;
