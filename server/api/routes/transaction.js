@@ -7,6 +7,7 @@ const check_auth = require('../helpers/check-auth');
 const check_perms = require('../helpers/check-permissions');
 const check_admin = require('../helpers/check-admin');
 const calculate_time_offset = require('../helpers/calculate-time-offset');
+const { json } = require('express');
 
 
 /*
@@ -97,20 +98,96 @@ router.post('/new', async (req, res) => {
 
 });
 
-router.get('/unknown_transactions/:id', async(req, res) => {
+/**
+ * Update transaction timestamp
+ */
 
-    let return_transaction_query;
-    let return_transaction_result;
+router.patch('/update/:id', check_auth, check_perms, async(req, res) => {
+    const {timestamp} = req.body;
+
+    let update_transaction_query;
+    let update_transaction_result;
+
+    try {
+        update_transaction_query = 'UPDATE transaction SET Timestamp = (?) WHERE Transaction_id = (?)';
+        update_transaction_result = await pool.query(update_transaction_query, timestamp, req.params.id);
+
+        return res.status(200).json({
+            code: 'UPDATE_SUCCESS',
+            message: update_transaction_result
+        })
+
+    } catch (err) {
+        return res.status(500).json({
+            error: err
+        })
+    }
+})
+
+
+/* 
+* Delete transaction
+*/
+
+router.delete('/delete/:id', check_auth, check_perms, async(req, res) => {
+    let delete_transaction_query;
+    let delete_transaction_result;
+
+    try {
+        delete_transaction_query = 'DELETE FROM transaction WHERE Transaction_id = (?)';
+        delete_transaction_result = await pool.query(delete_transaction_query, req.params.id);
+        return res.status(200).json({
+            code: 'DELETE_SUCCCESS',
+            message: delete_transaction_result
+        })
+    } catch (err) {
+        return res.status(500).json({
+            error: err
+        })
+    }
+})
+
+
+/*
+* Get all transactions for specific user, implement new function to return monthly
+*/
+
+router.get('/all/:id', check_auth, check_perms, async(req, res) => {
+    let return_transactions_query;
+    let return_transactions_result;
 
     try {
 
-        return_transaction_query = 'SELECT * FROM unknown_transcation WHERE Transaction_id = (?)';
-        return_transaction_result = await pool.query(return_transaction_query, req.params.id);
-        console.log(checkDate(return_transaction_result[0].Timestamp));
+        return_transactions_query = 'SELECT * FROM transaction WHERE User_id = (?)';
+        return_transactions_result = await pool.query(return_transactions_query, req.params.id);
 
         return res.status(200).json({
             code: 'TRANSACTION_SUCCESS',
-            message: return_transaction_result
+            message: return_transactions_result
+        })
+
+    } catch (err) {
+        return res.status(500).json({
+            error: err
+        })
+    }
+})
+
+/**
+ * Get 20 last unknown transactions
+ */
+
+router.get('/unknown-transactions', check_auth, check_perms, async(req, res) => {
+    let return_transactions_query;
+    let return_transactions_result;
+
+    try {
+        return_transactions_query = 'SELECT * FROM unknown_transcation ORDER BY TIMESTAMP DESC LIMIT 20';
+        return_transactions_result = await pool.query(return_transactions_query, null);
+
+        return res.status(200).json({
+            code: 'UNKNOWN_TRANSACTION_SUCCESS',
+            message: return_transactions_result
         })
 
     } catch (err) {
