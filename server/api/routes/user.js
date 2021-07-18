@@ -12,7 +12,7 @@ const check_admin = require('../helpers/check-admin');
 */
 
 router.post('/register', async (req, res) => {
-    const {email, password, name, role, key_id} = req.body;
+    const {email, password, name, role, key_id, profile_picture} = req.body;
     // first check if user is already in database
     let check_email_query;
     let add_new_user_query;
@@ -33,21 +33,53 @@ router.post('/register', async (req, res) => {
             code: 'ERR_EMAIL_ALREADY_IN_DB'
         })
     }
+
+    // then check if key is already assinged to any user
+    if(key_id) {
+        let check_if_key_is_valid_query;
+        let check_if_key_is_valid_result;
+        try {
+            check_if_key_is_valid_query = 'SELECT Key_id FROM user WHERE Key_id = (?)';
+            check_if_key_is_valid_result = await pool.query(check_if_key_is_valid_query, key_id);
+
+            if(check_if_key_is_valid_result.length != 0) {
+                return res.status(409).json({
+                    message: "Key is already assigned to another user!",
+                    code: 'ERR_KEY_ALREADY_IN_DB'
+                })
+            }
+        } catch (err) {
+            return res.status(500).json({
+                error: err
+            })
+        }
+    }
+
     // if everything is OK, hash password and store new user into DB
     bcrypt.hash(password, 10, async (err, hash) => {
         if(err) {
             return res.status(500).json({
-                error: "Error while hashing password!"
+                error: "Error while hashing password!",
+                code: 'ERR_FATAL'
             })
         }
         try {
+            // Key id and profile picture are optional on register
+            let add_new_user_parameters = [email, hash, name, role];
+
+            // Add key if present in post request
             if(key_id) {
-                add_new_user_query = 'INSERT INTO user (Email, Password, Name, Role, Key_id) VALUES (?, ?, ?, ?, ?)';
-                add_new_user_result = await pool.query(add_new_user_query, [email, hash, name, role, key_id]);
-            } else {
-                add_new_user_query = 'INSERT INTO user (Email, Password, Name, Role) VALUES (?, ?, ?, ?)';
-                add_new_user_result = await pool.query(add_new_user_query, [email, hash, name, role]);
+                add_new_user_parameters.push(key_id);
             }
+
+            // Add profile picture url if present in post request
+            if(profile_picture) {
+                add_new_user_parameters.push(profile_picture);
+            }
+
+            add_new_user_query = `INSERT INTO user (Email, Password, Name, Role ${key_id != undefined ? ', Key_id' : ''} ${profile_picture != undefined ? ', Profile_picture' : ''}) VALUES (?, ?, ?, ? ${key_id != undefined ? ', ?' : ''} ${profile_picture != undefined ? ', ?' : ''})`;
+            add_new_user_result = await pool.query(add_new_user_query, add_new_user_parameters);
+
             return res.status(200).json({
                 message: `successfully added user with ID: ${add_new_user_result.insertId} !`,
                 code: 'NEW_USER_SUCCESS'
