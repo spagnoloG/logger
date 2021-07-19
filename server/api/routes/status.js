@@ -19,6 +19,7 @@ router.get('/working-today', check_auth, check_admin, async (req, res) => {
         get_currently_working_users_result = await pool.query(get_currently_working_users_query);
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -35,6 +36,7 @@ router.get('/working-today', check_auth, check_admin, async (req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }

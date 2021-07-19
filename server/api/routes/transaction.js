@@ -22,6 +22,7 @@ router.post('/new', async (req, res) => {
         check_key_result = await pool.query(check_key_query, key_id);
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -39,6 +40,7 @@ router.post('/new', async (req, res) => {
             
         } catch (err) {
             return res.status(500).json({
+                code: 'ERR_DB',
                 error: err
             })
         }
@@ -75,6 +77,7 @@ router.post('/new', async (req, res) => {
 
             } catch (err) {
                 return res.status(500).json({
+                    code: 'ERR_DB',
                     error: err
                 })
             }
@@ -88,6 +91,7 @@ router.post('/new', async (req, res) => {
 
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -115,6 +119,7 @@ router.patch('/update/:id', check_auth, check_perms, async(req, res) => {
 
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -138,6 +143,7 @@ router.delete('/delete/:id', check_auth, check_perms, async(req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -164,6 +170,7 @@ router.get('/all/:id', check_auth, check_perms, async(req, res) => {
 
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -188,6 +195,7 @@ router.get('/unknown-transactions', check_auth, check_perms, async(req, res) => 
 
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }

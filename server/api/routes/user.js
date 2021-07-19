@@ -26,6 +26,7 @@ router.post('/register', async (req, res) => {
         email_result = await pool.query(check_email_query, email);
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -53,6 +54,7 @@ router.post('/register', async (req, res) => {
             }
         } catch (err) {
             return res.status(500).json({
+                code: 'ERR_DB',
                 error: err
             })
         }
@@ -89,6 +91,7 @@ router.post('/register', async (req, res) => {
             });
         } catch (err) {
             return res.status(500).json({
+                code: 'ERR_DB',
                 error: err
             })
         }
@@ -115,6 +118,7 @@ router.post('/login', async (req, res) => {
         }
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -165,6 +169,7 @@ router.get('/:id', check_auth, check_perms, async(req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -187,6 +192,7 @@ router.delete('/:id', check_auth, check_admin, async(req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -210,6 +216,7 @@ router.patch('/update/:id', check_auth, check_perms, async (req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -228,6 +235,7 @@ router.patch('/update-password/:id', check_auth, check_perms, async (req, res) =
     bcrypt.hash(password, 10, async (err, hash) => {
         if(err) {
             return res.status(500).json({
+                code: 'ERR_HASH',
                 error: "Error while hashing password!"
             })
         }
@@ -241,6 +249,7 @@ router.patch('/update-password/:id', check_auth, check_perms, async (req, res) =
             })
         } catch (err) {
             return res.status(500).json({
+                code: 'ERR_DB',
                 error: err
             })
         }
@@ -264,6 +273,7 @@ router.get('/users/all', check_auth, check_admin, async (req, res) => {
         })
     } catch (err) {
         return res.status(500).json({
+            code: 'ERR_DB',
             error: err
         })
     }
@@ -324,6 +334,7 @@ router.post('/profile-picture/:id', check_auth, check_perms, async(req, res) => 
 
             } catch(err) {
                 return res.status(500).json({
+                    code: 'ERR_DB',
                     error: err
                 })
             }
