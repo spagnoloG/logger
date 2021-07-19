@@ -8,18 +8,16 @@ module.exports = async () => {
         get_currently_working_users_result = await pool.query(get_currently_working_users_query);
 
         get_currently_working_users_result.forEach(async user => {
-            console.log('CONFLICT -> FOR USER: ' + user.user_id);
-            let conflict_query = 'INSERT INTO conflict(User_id) VALUES(?)';
-            await pool.query(conflict_query, user.user_id);
-
             let conflict_transaction_query = 'INSERT INTO transaction(User_id) VALUES(?)';
-            await pool.query(conflict_transaction_query, user.user_id);
+            let conflict_transaction_result = await pool.query(conflict_transaction_query, user.user_id);
+
+            console.log('CONFLICT -> FOR USER: ' + user.user_id);
+            
+            let conflict_query = 'INSERT INTO conflict(Transaction_id) VALUES(?)';
+            await pool.query(conflict_query, conflict_transaction_result.insertId);
         });
 
     } catch (err) {
-        return res.status(500).json({
-            code: 'ERR_DB',
-            error: err
-        })
+        console.log('WARN!!!!!!');
     }
 }

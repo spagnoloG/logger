@@ -43,9 +43,9 @@ CREATE TABLE `transaction` (
 
 CREATE TABLE `conflict` (
   `Conflict_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `User_id` bigint(20) NOT NULL,
+  `Transaction_id` bigint(20) NOT NULL,
   `Timestamp` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`Conflict_id`),
-  KEY `conflict_FK` (`User_id`),
-  CONSTRAINT `conflict_FK` FOREIGN KEY (`User_id`) REFERENCES `user` (`User_id`)
+  KEY `conflict_FK` (`Transaction_id`),
+  CONSTRAINT `conflict_FK` FOREIGN KEY (`Transaction_id`) REFERENCES `transaction` (`Transaction_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
