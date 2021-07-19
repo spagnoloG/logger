@@ -1,6 +1,5 @@
 const dotenv = require('dotenv');
 const express = require('express');
-const cors = require('cors');
 
 dotenv.config({path: '.env'});
 
@@ -9,7 +8,6 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-app.use(cors);
 
 // Import routes
 const userRoute = require('./api/routes/user');

@@ -152,7 +152,7 @@ router.delete('/delete/:id', check_auth, check_perms, async(req, res) => {
 
 
 /*
-* Get all transactions for specific user, implement new function to return monthly
+* Get all transactions for specific user
 */
 
 router.get('/all/:id', check_auth, check_perms, async(req, res) => {
@@ -175,7 +175,57 @@ router.get('/all/:id', check_auth, check_perms, async(req, res) => {
             error: err
         })
     }
-})
+});
+
+/*
+* Get transactions by month
+*/
+
+router.get('/monthly/:year/:month/:id', check_auth, check_perms, async(req, res) => {
+        // the month is 0-indexed
+        const {year, month, id} = req.params;
+
+        let start_date = new Date(year, month - 1, 1);
+        start_date = start_date.toISOString().split('T')[0] + ' ' + start_date.toTimeString().split(' ')[0];
+    
+        let finish_date = new Date(year, month, 1);
+        finish_date = finish_date.toISOString().split('T')[0] + ' ' + finish_date.toTimeString().split(' ')[0];
+
+        let return_monthly_transactions_query;
+        let return_monthly_transactions_result;
+
+        try {
+            return_monthly_transactions_query = 'SELECT Timestamp as timestamp FROM transaction  WHERE Timestamp >= (?) && Timestamp <= (?) && User_id = (?) ORDER BY Timestamp';
+            return_monthly_transactions_result = await pool.query(return_monthly_transactions_query, [start_date, finish_date, id]);
+
+            if(return_monthly_transactions_result.length == 0) {
+                // no transactions this month
+                return res.status(200).json({
+                    code: 'ERR_NO_RECORDS',
+                    message: {
+                        start_date: start_date,
+                        finish_date: finish_date
+                    }
+                })
+            }
+
+            return res.status(200).json({
+                code: 'MONTHLY_TRANSACTION_SUCCESS',
+                message: {
+                    timestamps: return_monthly_transactions_result,
+                    start_date: start_date,
+                    finish_date: finish_date
+                }
+            })
+
+        } catch (err) {
+            return res.status(500).json({
+                code: 'ERR_DB',
+                error: err
+            })
+        }
+});
+
 
 /**
  * Get 20 last unknown transactions
