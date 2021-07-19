@@ -1,7 +1,9 @@
 const dotenv = require('dotenv');
 const express = require('express');
+const schedule = require('node-schedule');
+const auto_finish = require('./api/auto/auto-finish');
 
-dotenv.config({path: '.env'});
+dotenv.config({path: './.env'});
 
 const PORT = process.env.PORT || '3000';
 const app = express();
@@ -62,3 +64,11 @@ app.use((error, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`Listening for requests on port ${PORT}`);
 });
+
+// Start daily schedule 
+const scheduler = schedule.scheduleJob('0 55 23 * * *', () => {
+    console.log('AUTOMATIC SCRIPT RUNNING TO CHECK IF ALL WORKERS HAVE CHECKED OUT!');
+    console.log('-----------------------------> START <-----------------------------');
+    auto_finish();
+    console.log('----------------------------> FINISHED <---------------------------');
+})
