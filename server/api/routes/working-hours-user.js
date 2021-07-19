@@ -1,8 +1,9 @@
 const express = require('express');
-const pool = require('../helpers/database');
 const router = express.Router();
-const check_auth = require('../helpers/check-auth');
-const check_perms = require('../helpers/check-permissions');
+
+const pool = require('../controllers/database/database');
+const check_auth = require('../controllers/auth/check-auth');
+const check_perms = require('../controllers/permissions/check-permissions');
 
 /**
  * Here are defined working hours per user

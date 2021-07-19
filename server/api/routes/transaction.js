@@ -1,9 +1,10 @@
 const express = require('express');
-const pool = require('../helpers/database');
 const router = express.Router();
-const check_auth = require('../helpers/check-auth');
-const check_perms = require('../helpers/check-permissions');
-const calculate_time_offset = require('../helpers/calculate-time-offset');
+
+const pool = require('../controllers/database/database');
+const check_auth = require('../controllers/auth/check-auth');
+const check_perms = require('../controllers/permissions/check-permissions');
+const calculate_time_offset = require('../controllers/calculations/calculate-time-offset');
 
 /*
 * Post a new transaction

@@ -1,8 +1,9 @@
 const express = require('express');
-const pool = require('../helpers/database');
 const router = express.Router();
-const check_auth = require('../helpers/check-auth');
-const check_admin = require('../helpers/check-admin');
+
+const pool = require('../controllers/database/database');
+const check_auth = require('../controllers/auth/check-auth');
+const check_admin = require('../controllers/permissions/check-admin');
 
 /*
 * Return list of users that are currently working / have worked

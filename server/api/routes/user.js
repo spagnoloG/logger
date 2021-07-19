@@ -1,14 +1,15 @@
 const express = require('express');
-const pool = require('../helpers/database');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const check_auth = require('../helpers/check-auth');
-const check_perms = require('../helpers/check-permissions');
-const check_admin = require('../helpers/check-admin');
 const formidable = require('formidable');
 const path = require("path");
 const fs = require('fs');
+
+const pool = require('../controllers/database/database');
+const check_auth = require('../controllers/auth/check-auth');
+const check_perms = require('../controllers/permissions/check-permissions');
+const check_admin = require('../controllers/permissions/check-admin');
 
 /*
 * Register a new user
