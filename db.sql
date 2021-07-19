@@ -1,42 +1,51 @@
-CREATE DATABASE logger;
+CREATE DATABASE `logger` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 CREATE USER  'dev'@'localhost' IDENTIFIED BY 'dev';
 FLUSH PRIVILEGES;
 GRANT ALL PRIVILEGES ON *.* TO 'dev'@'%' IDENTIFIED BY 'dev' WITH GRANT OPTION;
 
 
-CREATE TABLE logger.`user` (
-	Name varchar(100) NOT NULL,
-	User_id BIGINT auto_increment NOT NULL,
-	Password varchar(100) NOT NULL,
-	Email varchar(100) NOT NULL,
-	`Role` varchar(100) NOT NULL,
-	Key_id varchar(100) NULL,
-	CONSTRAINT user_PK PRIMARY KEY (User_id)
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_general_ci;
+-- logger.`user` definition
+
+CREATE TABLE `user` (
+  `Name` varchar(100) NOT NULL,
+  `User_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `Password` varchar(100) NOT NULL,
+  `Email` varchar(100) NOT NULL,
+  `Role` varchar(100) NOT NULL,
+  `Key_id` varchar(100) DEFAULT NULL,
+  `Profile_picture` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`User_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-CREATE TABLE logger.unknown_transcation (
-	Key_id varchar(100) NOT NULL,
-	`Timestamp` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	Transaction_id BIGINT auto_increment NOT NULL,
-	CONSTRAINT unknown_transcation_PK PRIMARY KEY (Transaction_id)
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_general_ci;
+-- logger.unknown_transcation definition
+
+CREATE TABLE `unknown_transcation` (
+  `Key_id` varchar(100) NOT NULL,
+  `Timestamp` datetime NOT NULL DEFAULT current_timestamp(),
+  `Transaction_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`Transaction_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-CREATE TABLE logger.`transaction` (
-	Transaction_id BIGINT auto_increment NOT NULL,
-	Key_id varchar(100) NOT NULL,
-	User_id BIGINT NOT NULL,
-	`Timestamp` DATE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	CONSTRAINT transaction_PK PRIMARY KEY (Transaction_id),
-	CONSTRAINT transaction_FK FOREIGN KEY (User_id) REFERENCES logger.`user`(User_id)
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_general_ci;
+-- logger.`transaction` definition
+
+CREATE TABLE `transaction` (
+  `Transaction_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `User_id` bigint(20) NOT NULL,
+  `Timestamp` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`Transaction_id`),
+  KEY `transaction_FK` (`User_id`),
+  CONSTRAINT `transaction_FK` FOREIGN KEY (`User_id`) REFERENCES `user` (`User_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- logger.conflict definition
+
+CREATE TABLE `conflict` (
+  `Conflict_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `User_id` bigint(20) NOT NULL,
+  `Timestamp` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`Conflict_id`),
+  KEY `conflict_FK` (`User_id`),
+  CONSTRAINT `conflict_FK` FOREIGN KEY (`User_id`) REFERENCES `user` (`User_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
