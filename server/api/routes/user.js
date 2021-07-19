@@ -261,10 +261,9 @@ router.patch('/update-password/:id', check_auth, check_perms, async (req, res) =
 * Get all users list, only if admin
 */
 
-router.get('/users/all', async (req, res) => {
+router.get('/users/all', check_auth, check_admin, async (req, res) => {
     let get_all_users_data_query;
     let get_all_users_data_result;
-    console.log('abc')
     try {
         get_all_users_data_query = 'SELECT Name as name, User_id as user_id, Role as role, Key_id as key_id, Email as email FROM user';
         get_all_users_data_result = await pool.query(get_all_users_data_query);
