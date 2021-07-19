@@ -1,2 +1,4 @@
-node_modules
-yarn.lock
+server/node_modules
+server/yarn.lock
+server/public/uploads/
+server/package-lock.json

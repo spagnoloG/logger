@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken');
 const check_auth = require('../helpers/check-auth');
 const check_perms = require('../helpers/check-permissions');
 const check_admin = require('../helpers/check-admin');
+const formidable = require('formidable');
+const path = require("path");
+const fs = require('fs');
 
 /*
 * Register a new user
@@ -265,5 +268,69 @@ router.get('/users/all', check_auth, check_admin, async (req, res) => {
         })
     }
 })
+
+/*
+* Upload profile picture
+*/
+
+router.post('/profile-picture/:id', check_auth, check_perms, async(req, res) => {
+    const file_types = ['image/jpeg', 'image/png', 'image/gif'];
+    const picture_path = './public/uploads/profile-pictures';
+    const current_time = new Date().getTime();
+    let file_name;
+    let failed = false;
+
+    let form = new formidable.IncomingForm();
+    form.uploadDir = path.resolve(picture_path);
+    form.maxFileSize = 5 * 1024 * 1024; // 5MB
+    form.multiples = false;
+
+    form.on('fileBegin', (name, file) => {
+        if(file_types.indexOf(file.type) === -1) {
+            failed = true;
+            res.status(415).json({
+                code: 'ERR_UNSUPPORTED_FILETYPE',
+                message: 'File type is not supported!',
+                supported: file_types
+            })
+            return res.end();
+        }
+    });
+
+    form.on('file', (name, file) => {
+        file_name = current_time + '_' +file.name;
+        fs.rename(file.path, path.join(form.uploadDir, file_name), (err) =>{
+            if(err) {
+                return res.status(500).json({
+                    code: 'ERR_FILE_UPLOAD_FAIL',
+                    message: 'Renaming of file failed',
+                })
+            }
+        })
+    });
+
+    form.on('end', async(file) => {
+        if(!failed) {
+            let update_profile_picutre_query;
+            let update_profile_picutre_result;
+            try {
+                update_profile_picutre_query = 'UPDATE user SET Profile_picture = (?) WHERE User_id = ?';
+                update_profile_picutre_result = await pool.query(update_profile_picutre_query, [file_name, req.params.id])
+
+                return res.status(200).json({
+                    code: 'PROFILE_PICTURE_UPLOAD_SUCCESS',
+                    message: update_profile_picutre_result
+                })
+
+            } catch(err) {
+                return res.status(500).json({
+                    error: err
+                })
+            }
+        }
+    })
+
+    form.parse(req);
+});
 
 module.exports = router;

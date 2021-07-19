@@ -1,6 +1,7 @@
 const { response } = require('express');
 const dotenv = require('dotenv');
 const express = require('express');
+const path = require("path");
 
 dotenv.config({path: '.env'});
 
@@ -24,6 +25,9 @@ app.use('/transaction', transactionRoute);
 app.use('/status', statusRoute);
 app.use('/working-hours-user', workingHoursUserRoute);
 app.use('/working-hours-admin', workingHoursAdminRoute);
+
+// Define public route (For images)
+app.use('/profile', express.static('public/uploads/profile-pictures'));
 
 // Request permissions
 app.use((req, res, next) => {
