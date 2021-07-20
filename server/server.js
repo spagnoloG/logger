@@ -17,6 +17,7 @@ const transactionRoute = require('./api/routes/transaction');
 const statusRoute = require('./api/routes/status');
 const workingHoursUserRoute = require('./api/routes/working-hours-user');
 const workingHoursAdminRoute = require('./api/routes/working-hours-admin');
+const conflictRoute = require('./api/routes/conflict');
 
 
 // Define routes
@@ -25,6 +26,7 @@ app.use('/transaction', transactionRoute);
 app.use('/status', statusRoute);
 app.use('/working-hours-user', workingHoursUserRoute);
 app.use('/working-hours-admin', workingHoursAdminRoute);
+app.use('/conflict', conflictRoute);
 
 // Define public route (For images)
 app.use('/profile', express.static('public/uploads/profile-pictures'));
