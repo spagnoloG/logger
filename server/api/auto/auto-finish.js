@@ -18,6 +18,7 @@ module.exports = async () => {
         });
 
     } catch (err) {
-        console.log('WARN!!!!!!');
+        console.log('FATAL ERROR! -> CONFLICTS ARE NOT LOGGED <>*<>');
+        process.exit(1);
     }
 }

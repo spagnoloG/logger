@@ -48,7 +48,7 @@ router.get('/today/:id', check_auth, check_perms, async(req, res) => {
     })
 })
 
-router.get('/month/:year/:month/:id', check_auth, check_perms, async(req, res) => {
+router.get('/monthly/:year/:month/:id', check_auth, check_perms, async(req, res) => {
     let timestamps_query;
     let timestamps_result;
 
@@ -97,7 +97,7 @@ router.get('/month/:year/:month/:id', check_auth, check_perms, async(req, res) =
     })
 })
 
-router.get('/day/:year/:month/:day/:id', check_auth, check_perms, async(req, res) => {
+router.get('/daily/:year/:month/:day/:id', async(req, res) => {
     let timestamps_query;
     let timestamps_result;
 
@@ -107,7 +107,7 @@ router.get('/day/:year/:month/:day/:id', check_auth, check_perms, async(req, res
     let start_date = new Date(year, month - 1, day, 0, 0, 0);
     start_date = start_date.toISOString().split('T')[0] + ' ' + start_date.toTimeString().split(' ')[0];
 
-    let finish_date = new Date(year, month, day, 23, 59, 59);
+    let finish_date = new Date(year, month - 1, day, 23, 59, 59);
     finish_date = finish_date.toISOString().split('T')[0] + ' ' + finish_date.toTimeString().split(' ')[0];
 
     try {
@@ -117,6 +117,10 @@ router.get('/day/:year/:month/:day/:id', check_auth, check_perms, async(req, res
             // no transactions this day
             return res.status(200).json({
                 code: 'ERR_NO_RECORDS',
+                message: {
+                    start_date: start_date,
+                    finish_date: finish_date
+                }
             })
         }
     } catch (err) {
