@@ -26,7 +26,7 @@ router.get('/daily/:year/:month/:day',  async(req, res) => {
         check_for_conflicts_query = 'SELECT conflict.Transaction_id as transaction_id, user.User_id as user_id, conflict.Conflict_id as conflict_id from conflict join transaction on transaction.Transaction_id = conflict.transaction_id join user on user.User_id = transaction.User_id WHERE conflict.Timestamp < CURDATE()';
         check_for_conflicts_result = await pool.query(check_for_conflicts_query);
 
-        // Return warning if there was any conflict catched
+        // Return error if there was any conflict catched (You cannot calculate working hours)
         if(check_for_conflicts_result.length > 0) {
             return res.status(200).json({
                 code: 'ERR_CONFLICTS_NEED_TO_BE_RESOLVED',
@@ -129,7 +129,7 @@ router.get('/monthly/:year/:month/',  async(req, res) => {
         check_for_conflicts_query = 'SELECT conflict.Transaction_id as transaction_id, user.User_id as user_id, conflict.Conflict_id as conflict_id from conflict join transaction on transaction.Transaction_id = conflict.transaction_id join user on user.User_id = transaction.User_id WHERE conflict.Timestamp < CURDATE()';
         check_for_conflicts_result = await pool.query(check_for_conflicts_query);
 
-        // Return warning if there was any conflict catched
+        // Return error if there was any conflict catched (You cannot calculate working hours)
         if(check_for_conflicts_result.length > 0) {
             return res.status(200).json({
                 code: 'ERR_CONFLICTS_NEED_TO_BE_RESOLVED',
@@ -153,7 +153,7 @@ router.get('/monthly/:year/:month/',  async(req, res) => {
         timestamps_query = 'SELECT Timestamp as timestamp, User_id as user_id FROM transaction WHERE Timestamp >= (?) && Timestamp < (?) ORDER BY User_id, Timestamp' ;
         timestamps_result = await pool.query(timestamps_query, [start_date, finish_date]);
         if(timestamps_result.length == 0) {
-            // no transactions that day
+            // no transactions that month
             return res.status(200).json({
                 code: 'WARN_NOBODY_WORKING',
                 message: {
