@@ -910,15 +910,15 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('Joze Gorisek',1,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','joze.gorisek@gmail.com','admin','key1',NULL)
-('Cvetka Marjetka',2,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','cvetka@gmail.com','admin','key2',NULL)
-('Janez Novak',3,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','janez@gmail.com','admin','key3',NULL)
-('Ana Novak',4,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','ana@gmail.com','admin','key4',NULL)
-('Krscen Maticek',5,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','maticek@gmail.com','user','key5',NULL)
-('Martin Krpan',6,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','martin@gmail.com','user','key6',NULL)
-('Giovi',7,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','giovi@gmail.com','user','key7',NULL)
-('Francka Bernot',8,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','francka@gmail.com','user','key8',NULL)
-('Slavoj Zizek',9,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','slavoj@gmail.com','user','key9',NULL)
+INSERT INTO `user` VALUES ('Joze Gorisek',1,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','joze.gorisek@gmail.com','admin','key1',NULL),
+('Cvetka Marjetka',2,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','cvetka@gmail.com','admin','key2',NULL),
+('Janez Novak',3,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','janez@gmail.com','admin','key3',NULL),
+('Ana Novak',4,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','ana@gmail.com','admin','key4',NULL),
+('Krscen Maticek',5,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','maticek@gmail.com','user','key5',NULL),
+('Martin Krpan',6,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','martin@gmail.com','user','key6',NULL),
+('Giovi',7,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','giovi@gmail.com','user','key7',NULL),
+('Francka Bernot',8,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','francka@gmail.com','user','key8',NULL),
+('Slavoj Zizek',9,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','slavoj@gmail.com','user','key9',NULL),
 ('Elon Musk',10,'$2b$10$D8DP2ZMjkx9gDP.C8emJIe1s5UfrdXCByZ7EOS/yF/FN00czgIW.m','elon@gmail.com','user','key10',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
