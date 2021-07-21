@@ -33,16 +33,6 @@ CREATE TABLE `conflict` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `conflict`
---
-
-LOCK TABLES `conflict` WRITE;
-/*!40000 ALTER TABLE `conflict` DISABLE KEYS */;
-INSERT INTO `conflict` VALUES (2,34,'2021-07-20 12:54:49');
-/*!40000 ALTER TABLE `conflict` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `transaction`
 --
 

@@ -72,6 +72,7 @@ router.get('/daily/:year/:month/:day',  async(req, res) => {
 
     for(let i = 0; i < timestamps_result.length; i+=2) {
         if(timestamps_result[i].user_id != current_user) {
+            current_user = timestamps_result[i].user_id;
             working_hours_today.push({
                 user_id: timestamps_result[i-1].user_id,
                 working_time: working_time/60
@@ -94,7 +95,6 @@ router.get('/daily/:year/:month/:day',  async(req, res) => {
         message: {
             working_hours: working_hours_today,
             unit: 'minutes',
-            code: 'WARN_NOBODY_WORKING',
             start_date: start_date,
             finish_date: finish_date
         }
@@ -184,6 +184,7 @@ router.get('/monthly/:year/:month/',  async(req, res) => {
 
         if(timestamps_result[i].user_id != current_user || day_changed) {
             day_changed = false;
+            current_user = timestamps_result[i].user_id;
             working_hours_today.push({
                 user_id: timestamps_result[i-1].user_id,
                 working_time: working_time/60,
@@ -196,8 +197,9 @@ router.get('/monthly/:year/:month/',  async(req, res) => {
                     user_id: timestamps_result[i].user_id,
                     working_time: working_time/60,
                     day: get_day_from_sql_timestamp(timestamps_result[i].timestamp)
-                })  
+                })
             }
+            working_time = 0;
         }
         working_time += calculate_difference(timestamps_result[i].timestamp, timestamps_result[i+1].timestamp);
     }
