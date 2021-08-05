@@ -1,8 +1,8 @@
 import Rest from '../util/Rest';
 
 const SignInService = {
-    login (credentials) {
-        Rest.post('/user/login', credentials);
+    async login (credentials) {
+        return await Rest.post('/user/login', credentials);
     }
 }
 
