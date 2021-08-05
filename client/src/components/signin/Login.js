@@ -16,16 +16,15 @@ import React, { useState, useEffect } from 'react';
 
 import SignInService from '../../api/SignInService';
 
-export const Login = () => {
-  
+import SimpleAlert from '../alert/SimpleAlert';
 
+export const Login = () => {
   const intialValues = { email: '', password: '' };
 
   const [formValues, setFormValues] = useState(intialValues);
   const [formErrors, setFormErrors] = useState({});
-
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverResponseErrors, setServerResponseErrors] = useState({});
 
   //input change handler
   const handleChange = e => {
@@ -62,9 +61,44 @@ export const Login = () => {
 
   useEffect(() => {
     const submit = async () => {
-      console.log(await SignInService.login(formValues));
+      await SignInService.login(formValues)
+        .then(response => {
+          if (response.data.code === 'ERR_EMAIL_NOT_FOUND') {
+            const error = {
+              messageTitle: 'Email is not found!',
+              message: 'Please check your email!',
+              status: 'warning',
+            };
+            return setServerResponseErrors(error);
+          } else if (response.data.code === 'ERR_INVALID_PASSWORD') {
+            const error = {
+              messageTitle: 'Password is invalid!',
+              message: 'Please check your password',
+              status: 'warning',
+            };
+            return setServerResponseErrors(error);
+          } else if (response.data.code === 'ERR_UNKNOWN') {
+            const error = {
+              messageTitle: 'Unknown Error!',
+              message: 'Server responded with an unknown error!',
+              status: 'warning',
+            };
+            return setServerResponseErrors(error);
+          }
+        // User login is successful! Store JWT
+        setServerResponseErrors({});
+        console.log(response.data.token);
+        })
+        .catch(err => {
+          const error = {
+            messageTitle: 'Server fault!',
+            message: 'Error while submiting form data',
+            status: 'error',
+          };
+          return setServerResponseErrors(error);
+        });
     };
-  
+
     if (Object.keys(formErrors).length === 0 && isSubmitting) {
       submit();
     }
@@ -131,6 +165,16 @@ export const Login = () => {
               <GridItem rowSpan={1} colStart={5} colEnd={6}>
                 <Button type="submit">Enter</Button>
               </GridItem>
+
+              {serverResponseErrors?.messageTitle && (
+                <GridItem rowSpan={1} colStart={2} colEnd={6}>
+                  <SimpleAlert
+                    messageTitle={serverResponseErrors.messageTitle}
+                    message={serverResponseErrors.message}
+                    status={serverResponseErrors.status}
+                  ></SimpleAlert>
+                </GridItem>
+              )}
             </Grid>
           </form>
         </Box>

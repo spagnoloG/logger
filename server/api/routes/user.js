@@ -112,7 +112,7 @@ router.post('/login', async (req, res) => {
         find_user_query = 'SELECT Password, User_id FROM user WHERE Email = (?)';
         find_user_result = await pool.query(find_user_query, email);
         if (find_user_result < 1) {
-            return res.status(401).json({
+            return res.status(200).json({
                 message: 'Email does not exist in DB!',
                 code: 'ERR_EMAIL_NOT_FOUND'
             })
@@ -126,9 +126,9 @@ router.post('/login', async (req, res) => {
     // Check if password matches -> return JWT
     bcrypt.compare(password, find_user_result[0].Password, (err, result) => {
         if(err) {
-            return res.status(401).json({
-                message: 'Entered password does not match!',
-                code: 'ERR_INVALID_PASSWORD'
+            return res.status(200).json({
+                message: 'Encryption/Decryption failed',
+                code: 'ERR_UNKNOWN'
             })
         }
         if(result) {
@@ -146,9 +146,9 @@ router.post('/login', async (req, res) => {
                 token: token
             });
         }
-        return res.status(401).json({
-            message: 'Encryption/Decryption failed',
-            code: 'ERR_UNKNOWN'
+        return res.status(200).json({
+            message: 'Entered password does not match!',
+            code: 'ERR_INVALID_PASSWORD'
         })
     })
 })
