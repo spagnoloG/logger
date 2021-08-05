@@ -8,6 +8,7 @@ import {
   Button,
   Grid,
   GridItem,
+  Spinner,
 } from '@chakra-ui/react';
 
 import { SiMinutemailer } from 'react-icons/si';
@@ -25,6 +26,7 @@ export const Login = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverResponseErrors, setServerResponseErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   //input change handler
   const handleChange = e => {
@@ -61,6 +63,7 @@ export const Login = () => {
 
   useEffect(() => {
     const submit = async () => {
+      setIsLoading(true);
       await SignInService.login(formValues)
         .then(response => {
           if (response.data.code === 'ERR_EMAIL_NOT_FOUND') {
@@ -69,25 +72,29 @@ export const Login = () => {
               message: 'Please check your email!',
               status: 'warning',
             };
-            return setServerResponseErrors(error);
+            setServerResponseErrors(error);
           } else if (response.data.code === 'ERR_INVALID_PASSWORD') {
             const error = {
               messageTitle: 'Password is invalid!',
               message: 'Please check your password',
               status: 'warning',
             };
-            return setServerResponseErrors(error);
+            setServerResponseErrors(error);
           } else if (response.data.code === 'ERR_UNKNOWN') {
             const error = {
               messageTitle: 'Unknown Error!',
               message: 'Server responded with an unknown error!',
               status: 'warning',
             };
-            return setServerResponseErrors(error);
+            setServerResponseErrors(error);
           }
-        // User login is successful! Store JWT
-        setServerResponseErrors({});
-        console.log(response.data.token);
+
+          if (response.data?.token.length > 0) {
+            // User login is successful! Store JWT
+            setServerResponseErrors({});
+            localStorage.setItem('JWT', response.data.token);
+            console.log(response.data.token);
+          }
         })
         .catch(err => {
           const error = {
@@ -95,8 +102,9 @@ export const Login = () => {
             message: 'Error while submiting form data',
             status: 'error',
           };
-          return setServerResponseErrors(error);
+          setServerResponseErrors(error);
         });
+      setIsLoading(false);
     };
 
     if (Object.keys(formErrors).length === 0 && isSubmitting) {
@@ -178,6 +186,7 @@ export const Login = () => {
             </Grid>
           </form>
         </Box>
+        {isLoading && <Spinner />}
       </Container>
     </div>
   );
