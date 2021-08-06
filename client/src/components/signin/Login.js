@@ -183,10 +183,18 @@ export const Login = () => {
                   ></SimpleAlert>
                 </GridItem>
               )}
+
+              {isLoading && (
+                <GridItem rowSpan={1} colStart={2} colEnd={6}>
+                  <Container centerContent>
+                    <Spinner />
+                  </Container>
+                </GridItem>
+              )}
+
             </Grid>
           </form>
         </Box>
-        {isLoading && <Spinner />}
       </Container>
     </div>
   );
