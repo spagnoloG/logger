@@ -154,6 +154,28 @@ router.post('/login', async (req, res) => {
 })
 
 /*
+* Verify is JWT is valid
+*/
+
+router.post('/validate-session', async (req, res) => {
+    const { token } = req.body;
+
+    jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
+        if(err) {
+            return res.status(200).json({
+                message: 'There was an error validating your key!',
+                code: 'ERR_SESSION_EXPIRED'
+            })
+        }
+        return res.status(200).json({
+            message: 'Session is still valid',
+            code: 'SESSION_VALID_SUCCESS'
+        })
+    })
+})
+
+
+/*
 * Get user data, only if it matches requested ID, or if user is admin
 */
 
